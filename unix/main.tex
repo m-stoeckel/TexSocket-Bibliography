@@ -1,0 +1,47 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage[ngerman]{babel}
+\usepackage{libertine}
+
+\usepackage{geometry}
+\geometry{
+  paperheight=16cm,
+  height=16cm,
+  top=0pt,
+  bottom=0pt,
+  headheight=0pt,
+  headsep=0pt,
+  footskip=0pt,
+  includeheadfoot,
+  textwidth=18cm,
+}
+\pagestyle{empty}
+  
+\usepackage[
+  style=authoryear,
+  backend=biber,
+  maxnames=9,
+  doi=false,
+  isbn=false,
+  url=false,
+]{biblatex}
+\addbibresource{bib.bib}
+
+% Remove bibliography headings
+\DefineBibliographyStrings{english}{references = {}}
+\DefineBibliographyStrings{ngerman}{references = {}}
+
+% Set bibliography font
+\renewcommand{\bibfont}{\sffamily\footnotesize}
+
+% Prevent pagebreak in bibliography
+% Source: https://tex.stackexchange.com/a/43275
+\patchcmd{\bibsetup}{\interlinepenalty=5000}{\interlinepenalty=10000}{}{}
+
+\begin{document}
+    \nocite{*}
+    \printbibliography[title={}]
+\end{document}
+
