@@ -3,10 +3,19 @@ output := "bib-" + date + ".png"
 
 alias default := run
 
+# run conversion pipeline: compile -> convert
 run InputFile="main" OutputFile=output:
     @just compile {{ InputFile }} {{ OutputFile }}
     @just convert {{ InputFile }} {{ OutputFile }}
 
+# use latexmk to compile the document
+latexmk InputFile="main" OutputFile=output:
+    echo "Compiling {{ without_extension(InputFile) }}";
+    latexmk -pdf -shell-escape -interaction=nonstopmode "{{ without_extension(InputFile) }}"
+
+alias mk := latexmk
+
+# use pdflatex, biber, pdflatex, pdflatex to compile the document
 compile InputFile="main" OutputFile=output:
     echo "Compiling {{ without_extension(InputFile) }}";
     pdflatex -interaction=nonstopmode -shell-escape "{{ without_extension(InputFile) }}";
@@ -14,6 +23,7 @@ compile InputFile="main" OutputFile=output:
     pdflatex -interaction=nonstopmode -shell-escape "{{ without_extension(InputFile) }}";
     pdflatex -interaction=nonstopmode -shell-escape "{{ without_extension(InputFile) }}";
 
+# convert the pdf to a png, output file is bib-<date>.png by default
 convert InputFile="main" OutputFile=output:
     echo "Converting {{ without_extension(InputFile) }}.pdf to {{ if OutputFile == "" { parent_directory(InputFile) / "bib-" + date + ".png" } else { OutputFile } }}";
     convert -density 600 "{{ without_extension(InputFile) }}.pdf" -trim "{{ if OutputFile == "" { parent_directory(InputFile) / "bib-" + date + ".png" } else { OutputFile } }}"
