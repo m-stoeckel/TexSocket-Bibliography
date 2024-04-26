@@ -1,0 +1,19 @@
+date := `date +'%Y%m%d-%H%M%S'`
+output := "bib-" + date + ".png"
+
+alias default := run
+
+run InputFile="main" OutputFile=output:
+    @just compile {{ InputFile }} {{ OutputFile }}
+    @just convert {{ InputFile }} {{ OutputFile }}
+
+compile InputFile="main" OutputFile=output:
+    echo "Compiling {{ without_extension(InputFile) }}";
+    pdflatex -interaction=nonstopmode -shell-escape "{{ without_extension(InputFile) }}";
+    biber --output-safechars "{{ without_extension(InputFile) }}";
+    pdflatex -interaction=nonstopmode -shell-escape "{{ without_extension(InputFile) }}";
+    pdflatex -interaction=nonstopmode -shell-escape "{{ without_extension(InputFile) }}";
+
+convert InputFile="main" OutputFile=output:
+    echo "Converting {{ without_extension(InputFile) }}.pdf to {{ if OutputFile == "" { parent_directory(InputFile) / "bib-" + date + ".png" } else { OutputFile } }}";
+    convert -density 600 "{{ without_extension(InputFile) }}.pdf" -trim "{{ if OutputFile == "" { parent_directory(InputFile) / "bib-" + date + ".png" } else { OutputFile } }}"
